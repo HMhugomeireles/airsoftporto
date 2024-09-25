@@ -19,6 +19,7 @@ import { updateUserCrono } from "./Actions"
 
 type CronoUserFormProps = {
   eventId: string
+  
 }
 
 export function CronoUserForm({

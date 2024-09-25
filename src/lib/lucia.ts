@@ -1,6 +1,7 @@
 import { PrismaAdapter } from '@lucia-auth/adapter-prisma'
 import { Lucia, generateId } from 'lucia'
 import { cookies } from 'next/headers'
+import { ROLES } from './constants'
 import { prisma } from './prisma'
 
 const adapter = new PrismaAdapter(prisma.session, prisma.user)
@@ -24,8 +25,8 @@ export type User = {
     picture: string | null;
     firstName: string | null;
     lastName: string | null;
-    role: string[];
-} 
+    hasAdminPrecision: boolean;
+}
 
 export const getUser = async () => {
     const sessionId = cookies().get(lucia.sessionCookieName)?.value || null
@@ -62,5 +63,23 @@ export const getUser = async () => {
 
     } catch (error) {
         console.log(error)
+    }
+}
+
+export async function getUserAuthorization() {
+    const user = await getUser();
+
+    if (!user) {
+        return null;
+    }
+
+    return {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName!,
+        lastName: user.lastName!,
+        active: user.active,
+        picture: user.picture!,
+        hasAdminPrecision: user.role.includes(ROLES.ADMIN)
     }
 }

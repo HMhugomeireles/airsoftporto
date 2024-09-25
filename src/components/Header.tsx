@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { getUser } from "@/lib/lucia";
+import { getUserAuthorization } from "@/lib/lucia";
 import { getWordFirstLatter } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 
 export async function Header() {
-  const user = await getUser()
+  const user = await getUserAuthorization()
 
   return (
     <MenuProvider>
@@ -18,7 +18,7 @@ export async function Header() {
           <div className="lg:max-w-full p-4">
             <div className="relative flex items-center justify-between">
               <div className="flex flex-1 items-center justify-between sm:items-stretch sm:justify-between">
-                <div className="absolute inset-y-0 right-0 flex items-center sm:hidden">
+                <div className="absolute inset-y-0 right-0 flex items-center md:hidden">
                   <MenuButton />
                 </div>
                 <div className="flex flex-shrink-0 items-center">
@@ -31,9 +31,9 @@ export async function Header() {
                     </div>
                   </div>
                 </div>
-                <div className="hidden sm:flex sm:items-center sm:ml-6">
+                <div className="hidden md:flex md:items-center md:ml-6">
                   <div className="flex space-x-4 items-center">
-                    <div className="hidden sm:flex sm:items-center sm:ml-6">
+                    <div className="hidden md:flex md:items-center md:ml-6">
                       <div className="flex space-x-4 items-center">
                         <Link href="/team" className="rounded-md px-3 py-2 text-sm font-extrabold uppercase text-gray-300 hover:bg-gray-700 hover:text-white">Team</Link>
                       </div>
@@ -64,11 +64,13 @@ export async function Header() {
         </div>
       </header>
       {user && (
-        <div className="hidden md:block py-4 bg-muted/50">
+        <div className="hidden lg:block py-4 bg-muted/50">
           <div className="container flex ">
             <Link className="mr-10" href={`/profile/${user?.id}`}>Profile</Link>
             <Link className="mr-10" href={`/team/${user?.id}`}>Team</Link>
-            <Link className="mr-10" href={`/dashboard`}>Dashboard</Link>
+            {user.hasAdminPrecision && (
+              <Link className="mr-10" href={`/dashboard`}>Dashboard</Link>
+            )}
           </div>
         </div>
       )}

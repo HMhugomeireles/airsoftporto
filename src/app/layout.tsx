@@ -1,6 +1,5 @@
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
-import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
@@ -16,7 +15,7 @@ export const metadata: Metadata = {
   description: "Airsoft games",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -29,7 +28,6 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <Toaster />
         <Header />
         <main className="container flex-1 py-10 h-full">
           {children}

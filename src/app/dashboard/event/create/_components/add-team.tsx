@@ -32,7 +32,6 @@ export function AddTeam({
       event.preventDefault();
       const inputHTML = event.currentTarget as HTMLInputElement;
       const value = inputHTML.value
-      console.log(event.currentTarget)
       if (value.trim()) {
         setTeamData({
           ...teamData,
@@ -80,6 +79,7 @@ export function AddTeam({
             value={teamData?.teamName}
             onChange={handleChange}
             placeholder="Insert value"
+            required={false}
           />
         </FormControl>
         <FormMessage />
@@ -93,6 +93,7 @@ export function AddTeam({
             value={teamData?.maxTeamPlayers}
             onChange={handleChange}
             placeholder="Insert value"
+            required={false}
           />
         </FormControl>
         <FormMessage />
@@ -104,6 +105,7 @@ export function AddTeam({
             type="text"
             name="teamItems"
             placeholder="Insert value"
+            required={false}
             onKeyDown={handleAddItem}
           />
         </FormControl>
@@ -120,6 +122,7 @@ export function AddTeam({
         <FormControl>
           <Select
             onValueChange={(value) => setTeamData({ ...teamData, color: value})}
+            required={false}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select color" />

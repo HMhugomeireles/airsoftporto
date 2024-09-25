@@ -2,10 +2,10 @@ import { ROLES } from '@/lib/constants';
 import { lucia } from '@/lib/lucia';
 import { prisma } from '@/lib/prisma';
 import { googleOAuthClient } from '@/lib/providers/googleOauth';
+import { randomUuid } from '@/lib/utils';
 import { cookies } from "next/headers";
 import { redirect } from 'next/navigation';
 import { NextRequest } from 'next/server';
-import { v4 as uuidv4 } from 'uuid';
 
 interface GoogleUser {
   id: string;
@@ -78,7 +78,7 @@ export async function GET(req: NextRequest, res: Response) {
 async function createUser(userData: GoogleUser) {
   const user = await prisma.user.create({
     data: {
-      id:  uuidv4(),
+      id:  randomUuid(),
       email: userData.email,
       picture: userData.picture,
       provider: 'google',

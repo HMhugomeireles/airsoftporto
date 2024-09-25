@@ -63,46 +63,94 @@ model TeamPlayer {
   userId     String
 }
 
-model Gametype {
-  id    String  @id @map("_id")
-  name  String
-  Event Event[]
+model Event {
+  id          String      @id @map("_id")
+  name        String
+  duration    String
+  openDoors   String
+  startGame   String
+  eventStatus EventStatus @default(SCHEDULE)
+  date        DateTime    @unique
+  squads      Squads[]
+  teamGap     Int
+  description String
+  gameGoals   String[]
+  rules       Rule[]
+  prices      Prices[]
+  tickets     Ticket[]
+  location    Locations   @relation(fields: [locationsId], references: [id])
+  locationsId String
 }
 
-model Event {
-  id             String   @id @map("_id")
-  name           String
-  date           DateTime @unique
-  eventTeamsType String[]
-  squads         String[]
-  teamGap        Int
+enum EventStatus {
+  ACTIVE
+  SCHEDULE
+  DONE
+}
 
-  Tickets Ticket[]
+model Prices {
+  id      String  @id @map("_id")
+  type    String
+  amount  Int
+  Event   Event?  @relation(fields: [eventId], references: [id])
+  eventId String?
+}
 
-  gametype   Gametype @relation(fields: [gametypeId], references: [id])
-  gametypeId String
+model Rule {
+  id          String  @id @map("_id")
+  description String
+  Event       Event?  @relation(fields: [eventId], references: [id])
+  eventId     String?
+}
+
+model Locations {
+  id         String  @id @map("_id")
+  street     String
+  directions String
+  Event      Event[]
+}
+
+model Squads {
+  id          String        @id @map("_id")
+  name        String
+  maxPlayers  Int
+  color       String
+  items       String[]
+  Event       Event?        @relation(fields: [eventId], references: [id])
+  eventId     String?
+  EntryPlayer EntryPlayer[]
 }
 
 model Ticket {
-  id        String   @id @map("_id")
-  isPayed   Boolean  @default(false)
-  isChecked Boolean  @default(false)
-  token     String
-  expiresAt DateTime
-  costs     Float
+  id            String   @id @map("_id")
+  isPayed       Boolean  @default(false)
+  ticketQRToken String
+  isChecked     Boolean  @default(false)
+  token         String
+  expiresAt     DateTime
+  totalPrice    Float
 
-  event   Event         @relation(fields: [eventId], references: [id])
   entries EntryPlayer[]
+  event   Event         @relation(fields: [eventId], references: [id])
   eventId String
 }
 
 model EntryPlayer {
-  id           String  @id @map("_id")
-  isAttended   Boolean
-  cronoMeasure String
-  bbWeight     String
-  player       User    @relation(fields: [userId], references: [id])
-  userId       String
-  Ticket       Ticket? @relation(fields: [ticketId], references: [id])
-  ticketId     String?
+  id                String            @id @map("_id")
+  entryPlayerStatus EntryPlayerStatus @default(STANDBY)
+  hasCheckIn        Boolean           @default(false)
+  cronoMeasure      String
+  bbWeight          String
+  squad             Squads            @relation(fields: [squadsId], references: [id])
+  player            User              @relation(fields: [userId], references: [id])
+  userId            String
+  Ticket            Ticket?           @relation(fields: [ticketId], references: [id])
+  ticketId          String?
+  squadsId          String
+}
+
+enum EntryPlayerStatus {
+  STANDBY
+  ACCEPTED
+  NOT_ACCEPTED
 }

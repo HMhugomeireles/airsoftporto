@@ -7,5 +7,6 @@ export const PERMISSIONS = {
 export const ROLES = {
   CREATOR: 'creator',
   MODERATOR: 'moderator',
-  USER: 'user'
+  USER: 'user',
+  ADMIN: 'admin'
 }

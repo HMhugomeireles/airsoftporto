@@ -9,7 +9,7 @@ import {
 import {
   Dialog
 } from "@/components/ui/dialog"
-import { CreateEventForm } from "../_components/CreateEventForm"
+import { CreateEventForm } from "./_components/CreateEventForm"
 
 
 export default async function CreateEventPage() {

@@ -1,5 +1,5 @@
 
-import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Table,
@@ -9,25 +9,33 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { getWordFirstLatter, randomUuid } from "@/lib/utils"
 import { Users } from "lucide-react"
-import Image from "next/image"
 import { HiUserGroup } from "react-icons/hi"
 import { TbRulerMeasure } from "react-icons/tb"
+import { EventStatusUI } from "../../../../components/EventStatus"
 import { CronySection } from "./_components/CronySection"
+import { getEventDetails } from "./Actions"
 
 export default async function Onboarding({
   params,
 }: {
   params: { eventId: string }
 }) {
+  const eventDetails = await getEventDetails(params.eventId);
 
   return (
     <section className="bg-muted/50 p-4">
       <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
         <section className="p-4 mb-4 col-span-2">
-          <div className="flex"><h1 className="text-2xl">Event: Sunday games</h1><Badge className="ml-4" variant={"active"}>Active</Badge></div>
-          <p className="text-sm text-gray-500">2023-07-12 10:42 AM</p>
-          <div className="flex items-center"><Users className="h-4 w-4 text-muted-foreground mr-4" /> 20</div>
+          <div className="flex"><h1 className="text-2xl">Event: {eventDetails.event.name}</h1></div>
+          <p className="text-sm text-gray-500">{eventDetails.event.date.toLocaleDateString('pt-PT', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+          })}</p>
+          <EventStatusUI eventStatus={eventDetails.event.status} />
+          <div className="flex items-center"><Users className="h-4 w-4 text-muted-foreground mr-4" /> {eventDetails.players.totalPlayers}</div>
         </section>
         <Card x-chunk="dashboard-01-chunk-2">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -35,7 +43,12 @@ export default async function Onboarding({
             <TbRulerMeasure className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">%80</div>
+            <div className="text-2xl font-bold">80%</div>
+            {/* {eventDetails.players.teams.map(team => (
+              <p key={randomUuid()} className="text-xs text-muted-foreground">
+                {team.name}: {team.totalPlayersPresents}
+              </p>
+            ))} */}
             <p className="text-xs text-muted-foreground">
               Camuflados: 30/50
             </p>
@@ -50,18 +63,19 @@ export default async function Onboarding({
             <HiUserGroup className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">100</div>
-            <p className="text-xs text-muted-foreground">
-              Camuflados: 50
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Contractors: 50
-            </p>
+            <div className="text-2xl font-bold">{eventDetails.players.totalPlayers}</div>
+            {eventDetails.players.teams.map(team => (
+              <p key={randomUuid()} className="text-xs text-muted-foreground">
+                {team.name}: {team.totalPlayersPresents}
+              </p>
+            ))}
           </CardContent>
         </Card>
       </div>
       <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3 mt-4">
-        <CronySection eventId={params.eventId} />
+        <CronySection
+          eventDetails={eventDetails}
+        />
         <Card x-chunk="dashboard-01-chunk-5">
           <CardHeader>
             <CardTitle>Players</CardTitle>
@@ -75,261 +89,28 @@ export default async function Onboarding({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow className="bg-accent">
-                  <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt="Product image"
-                      className="aspect-square rounded-md object-cover"
-                      height="34"
-                      src="https://ui.shadcn.com/placeholder.svg"
-                      width="34"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">Liam Johnson</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      liam@example.com
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow className="bg-accent">
-                  <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt="Product image"
-                      className="aspect-square rounded-md object-cover"
-                      height="34"
-                      src="https://ui.shadcn.com/placeholder.svg"
-                      width="34"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">Liam Johnson</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      liam@example.com
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow className="bg-accent">
-                  <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt="Product image"
-                      className="aspect-square rounded-md object-cover"
-                      height="34"
-                      src="https://ui.shadcn.com/placeholder.svg"
-                      width="34"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">Liam Johnson</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      liam@example.com
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow className="bg-accent">
-                  <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt="Product image"
-                      className="aspect-square rounded-md object-cover"
-                      height="34"
-                      src="https://ui.shadcn.com/placeholder.svg"
-                      width="34"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">Liam Johnson</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      liam@example.com
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow className="bg-accent">
-                  <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt="Product image"
-                      className="aspect-square rounded-md object-cover"
-                      height="34"
-                      src="https://ui.shadcn.com/placeholder.svg"
-                      width="34"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">Liam Johnson</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      liam@example.com
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow className="bg-accent">
-                  <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt="Product image"
-                      className="aspect-square rounded-md object-cover"
-                      height="34"
-                      src="https://ui.shadcn.com/placeholder.svg"
-                      width="34"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">Liam Johnson</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      liam@example.com
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow className="bg-accent">
-                  <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt="Product image"
-                      className="aspect-square rounded-md object-cover"
-                      height="34"
-                      src="https://ui.shadcn.com/placeholder.svg"
-                      width="34"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">Liam Johnson</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      liam@example.com
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow className="bg-accent">
-                  <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt="Product image"
-                      className="aspect-square rounded-md object-cover"
-                      height="34"
-                      src="https://ui.shadcn.com/placeholder.svg"
-                      width="34"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">Liam Johnson</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      liam@example.com
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow className="bg-accent">
-                  <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt="Product image"
-                      className="aspect-square rounded-md object-cover"
-                      height="34"
-                      src="https://ui.shadcn.com/placeholder.svg"
-                      width="34"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">Liam Johnson</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      liam@example.com
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow className="bg-accent">
-                  <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt="Product image"
-                      className="aspect-square rounded-md object-cover"
-                      height="34"
-                      src="https://ui.shadcn.com/placeholder.svg"
-                      width="34"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">Liam Johnson</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      liam@example.com
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow className="bg-accent">
-                  <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt="Product image"
-                      className="aspect-square rounded-md object-cover"
-                      height="34"
-                      src="https://ui.shadcn.com/placeholder.svg"
-                      width="34"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">Liam Johnson</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      liam@example.com
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow className="bg-accent">
-                  <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt="Product image"
-                      className="aspect-square rounded-md object-cover"
-                      height="34"
-                      src="https://ui.shadcn.com/placeholder.svg"
-                      width="34"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">Liam Johnson</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      liam@example.com
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow className="bg-accent">
-                  <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt="Product image"
-                      className="aspect-square rounded-md object-cover"
-                      height="34"
-                      src="https://ui.shadcn.com/placeholder.svg"
-                      width="34"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">Liam Johnson</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      liam@example.com
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow className="bg-accent">
-                  <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt="Product image"
-                      className="aspect-square rounded-md object-cover"
-                      height="34"
-                      src="https://ui.shadcn.com/placeholder.svg"
-                      width="34"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">Liam Johnson</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      liam@example.com
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow className="bg-accent">
-                  <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt="Product image"
-                      className="aspect-square rounded-md object-cover"
-                      height="34"
-                      src="https://ui.shadcn.com/placeholder.svg"
-                      width="34"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">Liam Johnson</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      liam@example.com
-                    </div>
-                  </TableCell>
-                </TableRow>
+                {eventDetails.players.list.map(eventPlayer => (
+                  <TableRow key={randomUuid()} className="bg-accent">
+                    <TableCell className="hidden sm:table-cell">
+                      <Avatar>
+                        <AvatarImage
+                          className="aspect-square rounded-md object-cover"
+                          src={eventPlayer.player.picture!}
+                          height="34"
+                          width="34"
+                        />
+                        <AvatarFallback>{getWordFirstLatter(eventPlayer.player.firstName!)}{getWordFirstLatter(eventPlayer.player.lastName!)}</AvatarFallback>
+                      </Avatar>
+                    </TableCell>
+                    <TableCell>
+                      <div className="font-medium">{eventPlayer.player.firstName} {eventPlayer.player.lastName}</div>
+                      <div className="hidden text-sm text-muted-foreground md:inline">
+                        {eventPlayer.player.email}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+
+                ))}
               </TableBody>
             </Table>
           </CardContent>

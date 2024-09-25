@@ -1,5 +1,6 @@
 'use client'
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
@@ -14,17 +15,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { getWordFirstLatter, randomUuid } from "@/lib/utils"
 import { Search } from "lucide-react"
-import Image from "next/image"
+import { EventDetails } from "../Actions"
 import { CronoUserForm } from "./CronoUserForm"
 
 type CronySectionProps = {
-  eventId: string
+  eventDetails: EventDetails
 }
 
 export function CronySection({
-  eventId
+  eventDetails
 }: CronySectionProps) {
+
+
   return (
     <Dialog>
       <Card
@@ -57,27 +61,31 @@ export function CronySection({
               </TableRow>
             </TableHeader>
             <TableBody>
-              <CronoUserForm eventId={eventId} />
-              <TableRow>
-                <TableCell className="hidden xl:table-column">
-                  <Image
-                    alt="Product image"
-                    className="aspect-square rounded-md object-cover"
-                    height="34"
-                    src="https://ui.shadcn.com/placeholder.svg"
-                    width="34"
-                  />
-                </TableCell>
-                <TableCell>
-                  <DialogTrigger><div className="font-medium">Liam Johnson</div></DialogTrigger>
-                </TableCell>
-                <TableCell>
-                  <DialogTrigger>-</DialogTrigger>
-                </TableCell>
-                <TableCell>
-                  <DialogTrigger>-</DialogTrigger>
-                </TableCell>
-              </TableRow>
+              {eventDetails.cronoList.map(playerCrono => (
+                <TableRow key={randomUuid()}>
+                  <TableCell className="hidden xl:table-column">
+                    <Avatar>
+                      <AvatarImage
+                        className="aspect-square rounded-md object-cover"
+                        src={playerCrono.picture!}
+                        height="34"
+                        width="34"
+                      />
+                      <AvatarFallback>{getWordFirstLatter(playerCrono.firstName!)}{getWordFirstLatter(playerCrono.lastName!)}</AvatarFallback>
+                    </Avatar>
+                  </TableCell>
+                  <TableCell>
+                    <DialogTrigger><div className="font-medium">{playerCrono.firstName} {playerCrono.lastName}</div></DialogTrigger>
+                    <CronoUserForm eventId={eventDetails.event.id} />
+                  </TableCell>
+                  <TableCell>
+                    <DialogTrigger>{playerCrono.cronoMeasure}</DialogTrigger>
+                  </TableCell>
+                  <TableCell>
+                    <DialogTrigger>{playerCrono.bbWeight}</DialogTrigger>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </CardContent>
