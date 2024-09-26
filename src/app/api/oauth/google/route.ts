@@ -52,7 +52,7 @@ export async function GET(req: NextRequest, res: Response) {
       method: 'GET'
     })
   
-    const googleData = (await googleResponse.json()) as any
+    const googleData = (await googleResponse.json()) as GoogleUser
   
     const existingUser = await prisma.user.findUnique({
       where: {

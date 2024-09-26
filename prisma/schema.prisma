@@ -16,7 +16,7 @@ datasource db {
 model User {
   id          String   @id @map("_id")
   email       String   @unique
-  nif         String?  @unique
+  nif         String?
   apdName     String?
   apdNumber   Int?
   firstName   String?
@@ -50,7 +50,7 @@ model Team {
   fag    String? @default("")
   banner String? @default("")
 
-  players TeamPlayer[]
+  members TeamPlayer[]
 }
 
 model TeamPlayer {

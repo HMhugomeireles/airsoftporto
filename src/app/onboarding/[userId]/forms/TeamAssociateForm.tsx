@@ -8,14 +8,14 @@ import { KeyboardEvent, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import PulseLoader from 'react-spinners/PulseLoader';
 import { z } from "zod";
-import { formSchema } from "./WizardForm";
+import { onboardingFormSchema } from "./WizardForm";
 
 type TeamType = { id: string; name: string; fag: string | null; banner: string | null; }
 
 export function TeamAssociateForm() {
   const [loading, setLoading] = useState<boolean>(false)
   const [playerType, setPlayerType] = useState<"independent" | "team">("independent");
-  const { setValue } = useFormContext<z.infer<typeof formSchema>>();
+  const { setValue } = useFormContext<z.infer<typeof onboardingFormSchema>>();
   const [teamList, setTeamList] = useState<TeamType[]| undefined>(undefined);
 
   async function handleSearch(e: KeyboardEvent<HTMLInputElement>) {
@@ -77,7 +77,7 @@ export function TeamAssociateForm() {
                   <div className="text-xs p-2">Select your team</div>
                 )}
                 {Boolean(teamList) && teamList?.map(team => (
-                  <Badge key={team.id} onClick={() => setValue("team.name", team.name)} className="m-2 cursor-pointer select-none" key={team.id} variant="outline">{team.name}</Badge>
+                  <Badge key={team.id} onClick={() => setValue("team.name", team.name)} className="m-2 cursor-pointer select-none" variant="outline">{team.name}</Badge>
                 ))}
               </section>
             </section>

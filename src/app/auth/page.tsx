@@ -1,15 +1,7 @@
-import { LoginForm } from "./LoginForm";
 import { GoogleAuth } from "./providers/GoogleAuth";
 
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
 import Image from "next/image";
 import { FacebookAuth } from "./providers/FacebookAuth";
-import { RegisterForm } from "./RegisterForm";
 
 export default function AuthPage() {
 
@@ -21,6 +13,7 @@ export default function AuthPage() {
           <div className="flex items-center">
             <Image className="h-14 w-14" width={50} height={50} src="/cap_logo.png" alt="logo Cap" />
             <h1 className="ml-2 text-xl uppercase">Clube Airsoft Porto</h1>
+            <p className="text-center">Login</p>
           </div>
         </div>
         <section className="flex flex-col justify-center">
@@ -28,7 +21,7 @@ export default function AuthPage() {
           <FacebookAuth />
         </section>
 
-        <section className="w-full flex items-center justify-center gap-2 my-8">
+        {/* <section className="w-full flex items-center justify-center gap-2 my-8">
           <span className="border-b border-gray-300 w-full"></span>
           <span className="flex-none uppercase text-xs">Or sign in with your email</span>
           <span className="border-b border-gray-300 w-full"></span>
@@ -47,7 +40,7 @@ export default function AuthPage() {
               <RegisterForm />
             </TabsContent>
           </Tabs>
-        </section>
+        </section> */}
       </section>
 
     </section>

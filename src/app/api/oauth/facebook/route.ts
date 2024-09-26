@@ -1,7 +1,20 @@
-import { lucia } from "@/lib/lucia"
-import { facebookOAuthClient } from "@/lib/providers/facebookOauth"
-import { cookies } from "next/headers"
-import { NextRequest, NextResponse } from "next/server"
+import { ROLES } from "@/lib/constants";
+import { lucia } from "@/lib/lucia";
+import { prisma } from "@/lib/prisma";
+import { facebookOAuthClient } from "@/lib/providers/facebookOauth";
+import { randomUuid } from "@/lib/utils";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { NextRequest } from "next/server";
+
+interface FacebookUser {
+  first_name: string;
+  last_name: string;
+  email: string;
+  picture: {
+    url: string;
+  }
+}
 
 export const GET = async (req: NextRequest) => {
   try {
@@ -22,107 +35,40 @@ export const GET = async (req: NextRequest) => {
       { method: "GET" }
     )
 
-    const facebookData = (await facebookRes.json()) as {
-      name: string
-      id: string
-      email: string
-      picture: {
-        height: number
-        is_silhouette: boolean
-        url: string
-        width: number
-      }
-    }
+    const facebookData = (await facebookRes.json()) as FacebookUser
 
-    // const transactionRes = await db.transaction(async (trx) => {
-    //   try {
-    //     const existingUser = await trx.query.userTable.findFirst({
-    //       where: (table) => eq(table.email, facebookData.email),
-    //     })
-
-    //     if (!existingUser) {
-    //       const userId = generateId(15)
-    //       await trx.insert(userTable).values({
-    //         id: userId,
-    //         email: facebookData.email,
-    //         name: facebookData.name,
-    //         profilePictureUrl: facebookData.picture.url,
-    //         isEmailVerified: true,
-    //       })
-
-    //       await trx.insert(oauthAccountTable).values({
-    //         accessToken,
-    //         expiresAt: accessTokenExpiresAt,
-    //         provider: "facebook",
-    //         providerUserId: facebookData.id,
-    //         userId,
-    //         id: generateId(15),
-    //       })
-
-    //       return {
-    //         success: true,
-    //         message: "User logged in successfully",
-    //         data: {
-    //           id: userId,
-    //         },
-    //       }
-    //     } else {
-    //       await trx
-    //         .update(oauthAccountTable)
-    //         .set({
-    //           accessToken,
-    //           expiresAt: accessTokenExpiresAt,
-    //         })
-    //         .where(
-    //           and(
-    //             eq(oauthAccountTable.providerUserId, facebookData.id),
-    //             eq(oauthAccountTable.provider, "facebook")
-    //           )
-    //         )
-    //     }
-
-    //     return {
-    //       success: true,
-    //       message: "User logged in successfully",
-    //       data: {
-    //         id: existingUser?.id,
-    //       },
-    //     }
-    //   } catch (error: any) {
-    //     return {
-    //       success: false,
-    //       message: error.message,
-    //       data: null,
-    //     }
-    //   }
-    // })
-
-    // if (!transactionRes.success || !transactionRes.data)
-    //   throw new Error(transactionRes.message)
-
-    const session = await lucia.createSession(transactionRes?.data?.id, {
-      expiresIn: 60 * 60 * 24 * 30,
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        email: facebookData.email
+      } // need update the user date from the provider
     })
-    const sessionCookie = lucia.createSessionCookie(session.id)
+  
+    const userId = existingUser 
+      ? existingUser.id
+      : (await createUser(facebookData))
+  
+    const session = await lucia.createSession(userId, {})
+    const sessionCookie = await lucia.createSessionCookie(session.id)
+    cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
 
-    cookies().set(
-      sessionCookie.name,
-      sessionCookie.value,
-      sessionCookie.attributes
-    )
-
-    return NextResponse.redirect(
-      new URL("/", process.env.NEXT_PUBLIC_BASE_URL),
-      {
-        status: 302,
-      }
-    )
+    return redirect(`/onboarding/${userId}`)
   } catch (error: any) {
-    return Response.json(
-      { error: error.message },
-      {
-        status: 500,
-      }
-    )
+    return redirect('/')
   }
+}
+
+async function createUser(userData: FacebookUser) {
+  const user = await prisma.user.create({
+    data: {
+      id:  randomUuid(),
+      email: userData.email,
+      picture: userData.picture.url,
+      provider: 'facebook',
+      firstName: userData.first_name,
+      lastName: userData.last_name,
+      role: [ROLES.USER],
+      permissions: []
+    }
+  })
+  return user.id
 }

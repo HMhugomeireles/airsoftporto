@@ -1,23 +1,33 @@
 //import { getUserInformation } from "./Actions";
 
+import { UserModel } from "@/module/Users";
+import { redirect, RedirectType } from "next/navigation";
+
 export default async function ProfilePage({
   params,
 }: {
   params: { userId: string }
 }) {
-  // const user = await getUserInformation(params.userId)
+  const user = await UserModel.getUserTeam(params.userId)
 
-  // if (!user || user.active) {
-  //   return redirect('/', RedirectType.push);
-  // }
+  if (!user) {
+    return redirect('/', RedirectType.push);
+  }
 
   return (
-    <section>
-      <section className="flex w-full justify-center">
-        <section className="max-w-md w-full flex flex-col justify-center">
-          Team Page
-        </section>
-      </section>
+    <section className="container">
+      {!Boolean(user.TeamPlayer.length) && (
+        <>
+          <section>Create Team</section>
+          <section>Join Team</section>
+        </>
+      ) }
+      {Boolean(user.TeamPlayer.length) && (
+        <>
+          team name
+          
+        </>
+      ) }   
     </section>
   )
 }

@@ -21,7 +21,7 @@ export function Menu({ user }: MenuProps) {
   return (
     <>
       {isOpen && (
-        <div className="md:hidden p-4 bg-muted/50" id="mobile-menu">
+        <div className="lg:hidden p-4 bg-muted/50" id="mobile-menu">
           <div className="space-y-2 px-2 pb-3 pt-2 flex justify-center">
             {user ? (
               <div className="relative" onClick={toggle}>
@@ -48,12 +48,14 @@ export function Menu({ user }: MenuProps) {
             )}
           </div>
           <div>
-            <div className="mb-6">
-              <p className="text-xs font-semibold">MENU</p>
-              <Separator />
-            </div>
             {Boolean(user?.id) && (
-              <Link onClick={toggle} href="/team" className="block rounded-md px-3 py-2 text-base font-extrabold uppercase text-gray-300 hover:bg-gray-700 hover:text-white">Team</Link>
+              <>
+                <div className="mb-6">
+                  <p className="text-xs font-semibold">MENU</p>
+                  <Separator />
+                </div>
+                <Link onClick={toggle} href="/team" className="block rounded-md px-3 py-2 text-base font-extrabold uppercase text-gray-300 hover:bg-gray-700 hover:text-white">Team</Link>
+              </>
             )}
             {user?.hasAdminPrecision && (
               <>

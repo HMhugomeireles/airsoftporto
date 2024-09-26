@@ -13,12 +13,12 @@ export async function Header() {
 
   return (
     <MenuProvider>
-      <header className="lg:bg-[#00000090] z-10">
+      <header className="bg-[#00000090] z-10">
         <div className="lg:container">
           <div className="lg:max-w-full p-4">
             <div className="relative flex items-center justify-between">
               <div className="flex flex-1 items-center justify-between sm:items-stretch sm:justify-between">
-                <div className="absolute inset-y-0 right-0 flex items-center md:hidden">
+                <div className="absolute inset-y-0 right-0 flex items-center lg:hidden">
                   <MenuButton />
                 </div>
                 <div className="flex flex-shrink-0 items-center">
@@ -31,13 +31,8 @@ export async function Header() {
                     </div>
                   </div>
                 </div>
-                <div className="hidden md:flex md:items-center md:ml-6">
+                <div className="hidden lg:flex lg:items-center lg:ml-6">
                   <div className="flex space-x-4 items-center">
-                    <div className="hidden md:flex md:items-center md:ml-6">
-                      <div className="flex space-x-4 items-center">
-                        <Link href="/team" className="rounded-md px-3 py-2 text-sm font-extrabold uppercase text-gray-300 hover:bg-gray-700 hover:text-white">Team</Link>
-                      </div>
-                    </div>
                     {user ? (
                       <>
                         {!user.active && (
@@ -64,13 +59,19 @@ export async function Header() {
         </div>
       </header>
       {user && (
-        <div className="hidden lg:block py-4 bg-muted/50">
-          <div className="container flex ">
-            <Link className="mr-10" href={`/profile/${user?.id}`}>Profile</Link>
-            <Link className="mr-10" href={`/team/${user?.id}`}>Team</Link>
-            {user.hasAdminPrecision && (
-              <Link className="mr-10" href={`/dashboard`}>Dashboard</Link>
-            )}
+        <div className="hidden lg:block py-4 bg-muted/50 select-none">
+          <div className="container flex">
+            <div className="px-6">
+              {/* <Link className="mr-10" href={`/profile/${user?.id}`}>Profile</Link> */}
+              <Link className="mr-10" href={`/team/${user?.id}`}>Team</Link>
+              {user.hasAdminPrecision && (
+                <>
+                  <Link className="mr-10" href={`/dashboard`}>Dashboard</Link>
+                  <Link className="mr-10" href="/dashboard/event">Event</Link>
+                  <Link className="mr-10" href={`/dashboard/users`}>Users</Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}

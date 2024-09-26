@@ -45,8 +45,6 @@ export async function POST(request: Request) {
       }
     })
 
-    console.log(body)
-
     return NextResponse.json({})
   } catch (error) {
     console.error(error)
@@ -82,9 +80,3 @@ function mapperPrices(items: { type: "partner" | "normal", amount: number }[]) {
     amount: item.amount
   }))
 }
-
-/**
- * 
- * 
- * 
- */

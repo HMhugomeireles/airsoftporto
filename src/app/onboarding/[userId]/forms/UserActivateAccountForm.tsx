@@ -3,11 +3,11 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { formSchema } from "./WizardForm";
+import { onboardingFormSchema } from "./WizardForm";
 
 
 export function UserActivateAccountForm() {
-  const { control } = useFormContext<z.infer<typeof formSchema>>();
+  const { control } = useFormContext<z.infer<typeof onboardingFormSchema>>();
 
   return (
     <>

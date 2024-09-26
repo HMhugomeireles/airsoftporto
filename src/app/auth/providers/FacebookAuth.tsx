@@ -1,9 +1,9 @@
 'use client'
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 import { IoLogoFacebook } from "react-icons/io";
 import { getFaceBookConsentUrl } from "../Actions";
-import { useToast } from "@/components/ui/use-toast"
 
 export function FacebookAuth() {
   const { toast } = useToast()

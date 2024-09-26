@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardFooter } from "@/components/ui/card";
 import { validateNIF } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { User } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -11,7 +12,8 @@ import { TeamAssociateForm } from "./TeamAssociateForm";
 import { UserActivateAccountForm } from "./UserActivateAccountForm";
 
 
-export const formSchema = z.object({
+export const onboardingFormSchema = z.object({
+  userId: z.string(),
   apdName: z.string({
     required_error: "Value is required."
   }).min(1),
@@ -28,11 +30,18 @@ export const formSchema = z.object({
   }).optional()
 })
 
+type WizardFormProps = {
+  user: User
+}
 
-export function WizardForm() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {},
+export function WizardForm({
+  user
+}: WizardFormProps) {
+  const form = useForm<z.infer<typeof onboardingFormSchema>>({
+    resolver: zodResolver(onboardingFormSchema),
+    defaultValues: {
+      userId: user.id
+    },
   })
   const { formState: { isValid, isSubmitted, errors } } = form
   const [step, setStep] = useState(0);
@@ -44,8 +53,17 @@ export function WizardForm() {
   }
   const prevStep = () => setStep((prev) => prev - 1);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
+  async function onSubmit(data: z.infer<typeof onboardingFormSchema>) {
+    const response = await fetch('/api/user/onboarding', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    const responseData = await response.json();
+
+    console.log({responseData})
   }
 
   useEffect(() => {
