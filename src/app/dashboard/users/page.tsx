@@ -88,7 +88,7 @@ export default async function UsersPage() {
                         <IoCloseCircle className="text-red-600 text-2xl" />
                       )}
                     </TableCell>
-                    <TableCell>{user.role.map(role => (
+                    <TableCell>{user.role.map((role: string) => (
                       <div className="m-2" key={randomUuid()}>{role}</div>
                     ))}</TableCell>
                     <TableCell>{user.active ? (
