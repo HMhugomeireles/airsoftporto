@@ -1,7 +1,3 @@
-'use client'
-
-import Image from "next/image";
-import { FaInstagram, FaWhatsapp } from "react-icons/fa";
 
 export function Footer() {
     return (
