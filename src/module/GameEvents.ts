@@ -77,7 +77,7 @@ async function getGameEventDetails(eventId: string): Promise<GameEventType | nul
   return event
 }
 
-async function getAllEvents() {
+async function getAllEvents(): Promise<GameEventType[] | []> {
   const event = await prisma.gameEvent.findMany({
     include: {
       prices: true,
