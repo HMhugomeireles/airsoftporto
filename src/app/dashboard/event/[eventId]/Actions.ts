@@ -1,5 +1,5 @@
 import { GameEventsModel } from "@/module/GameEvents"
-import { GameEventStatus, Prisma } from "@prisma/client"
+import { GameEventStatusType, TicketPlayerType } from "@/module/type"
 
 
 export type EventDetails = {
@@ -7,7 +7,7 @@ export type EventDetails = {
     id: string
     name: string
     date: Date
-    status: GameEventStatus
+    status: GameEventStatusType
   }
   players: {
     totalPlayers: number
@@ -15,7 +15,7 @@ export type EventDetails = {
       name: string
       totalPlayersPresents: number
     }[]
-    list: Prisma.TicketPlayerGetPayload<{ include: { user: true, squad: true }}>[]
+    list: TicketPlayerType[]
   }
   cronoList: { 
     firstName: string
