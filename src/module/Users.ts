@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { UserType, UserWithTeamType } from "./type";
 
 export async function getUserInformation(userId: string) {
   return await prisma.user.findUnique({
@@ -9,33 +10,20 @@ export async function getUserInformation(userId: string) {
 }
 
 
-async function getUserTeam(userId: string) {
+async function getUserTeam(userId: string): Promise<UserWithTeamType | null> {
   return await prisma.user.findUnique({
     where: {
       id: userId
     },
-    select: {
+    include: {
       TeamMember: true
     }
   })
 }
 
 
-async function getAllUsers() {
-  return await prisma.user.findMany({
-    select: {
-      id: true,
-      email: true,
-      firstName: true,
-      lastName: true,
-      picture: true,
-      block: true,
-      partner: true,
-      role: true,
-      permissions: true,
-      active: true,
-    }
-  })
+async function getAllUsers(): Promise<UserType[]> {
+  return await prisma.user.findMany()
 }
 
 export const UserModel = {
