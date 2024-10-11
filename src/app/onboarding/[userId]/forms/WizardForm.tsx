@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardFooter } from "@/components/ui/card";
 import { validateNIF } from "@/lib/utils";
+import { UserType } from "@/module/type";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -31,7 +31,7 @@ export const onboardingFormSchema = z.object({
 })
 
 type WizardFormProps = {
-  user: User
+  user: UserType
 }
 
 export function WizardForm({
