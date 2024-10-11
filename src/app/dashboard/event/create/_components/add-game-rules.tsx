@@ -20,7 +20,6 @@ export function AddGameRule({
       event.preventDefault();
       const inputHTML = event.currentTarget as HTMLInputElement;
       const value = inputHTML.value
-      console.log(event.currentTarget)
       if (value.trim()) {
         setData([...data, value])
       }

@@ -1,8 +1,9 @@
 import { Badge } from "@/components/ui/badge"
-import { EventStatus } from "@prisma/client"
+import { GameEventStatus } from "@prisma/client"
+
 
 type EventStatusProps = {
-  eventStatus: EventStatus
+  eventStatus: GameEventStatus
 }
 
 export function EventStatusUI({
@@ -10,9 +11,9 @@ export function EventStatusUI({
 }: EventStatusProps) {
   return (
     <>
-      {eventStatus.match(EventStatus.ACTIVE) && <Badge variant="active">Active</Badge>}
-      {eventStatus.match(EventStatus.SCHEDULE) && <Badge variant="schedule">Schedule</Badge>}
-      {eventStatus.match(EventStatus.DONE) && <Badge variant="outline">Done</Badge>}
+      {eventStatus.match(GameEventStatus.ACTIVE) && <Badge variant="active">Active</Badge>}
+      {eventStatus.match(GameEventStatus.SCHEDULE) && <Badge variant="schedule">Schedule</Badge>}
+      {eventStatus.match(GameEventStatus.DONE) && <Badge variant="outline">Done</Badge>}
     </>
   )
 }

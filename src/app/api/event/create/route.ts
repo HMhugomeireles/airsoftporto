@@ -9,7 +9,7 @@ export async function POST(request: Request) {
 
   try {
     
-    const result = await prisma.event.create({
+    const result = await prisma.gameEvent.create({
       data: {
         id: randomUuid(),
         name: body.eventName,

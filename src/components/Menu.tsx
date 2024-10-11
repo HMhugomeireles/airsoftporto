@@ -17,7 +17,6 @@ type MenuProps = {
 export function Menu({ user }: MenuProps) {
   const { isOpen, toggle } = useToggleMenuContext();
 
-  console.log(user)
   return (
     <>
       {isOpen && (

@@ -1,11 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic'
 
-export async function GET(req: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const url = new URL(req.url);
-    const teamName = url.searchParams.get('teamName');
+    const { teamName }: { teamName: string } = await request.json();
 
     if (!teamName) {
       return NextResponse.json({ message: "Missing team name" }, { status: 400 });

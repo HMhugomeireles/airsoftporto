@@ -63,13 +63,14 @@ export function WizardForm({
     })
     const responseData = await response.json();
 
-    console.log({responseData})
+    // console.log({responseData})
+    // TODO ask create more event from the present data
   }
 
   useEffect(() => {
-    console.log("Is Valid:", isValid);
-    console.log("Is Submitted:", isSubmitted);
-    console.log("Errors:", errors);
+    // console.log("Is Valid:", isValid);
+    // console.log("Is Submitted:", isSubmitted);
+    // console.log("Errors:", errors);
   }, [isValid, isSubmitted, errors]);
 
   return (

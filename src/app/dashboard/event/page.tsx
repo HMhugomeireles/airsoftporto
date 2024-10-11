@@ -10,7 +10,6 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { EventViewType } from "@/module/type"
 import { PlusCircle } from "lucide-react"
 import Link from "next/link"
 import { Events } from "../_components/Events"
@@ -18,7 +17,7 @@ import { getAllEvents } from "./Action"
 
 
 export default async function EventPage() {
-  const events: EventViewType[] = await getAllEvents() as EventViewType[];
+  const events = await getAllEvents();
 
   return (
     <Dialog>

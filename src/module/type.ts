@@ -1,27 +1,41 @@
-import { EntryPlayer, Event, Locations, Prices, Rule, Squads, Ticket, User } from "@prisma/client";
-
-export type EntryPlayerModel = EntryPlayer & {
-  player: User
-  squad: Squads
-}
-
-export type TicketModel = Ticket & {
-  entries: EntryPlayerModel[]
-}
-
-export type EventModelType = Omit<Event, "locationsId"> & {
-  squads: Squads[]
-  rules: Rule[]
-  prices: Prices[]
-  location: Locations
-  tickets: TicketModel[]
-}
+import { Prisma } from "@prisma/client";
 
 
-export type EventViewType = EventModelType & {
-  eventMaxPlayers: number;
+export type GameEventWithStatsType = GameEventType & {
   playersAccepted: number;
   playersNotAccepted: number;
   playersStandby: number;
   maxPlayersRegister: number;
+  eventMaxPlayers: number;
 }
+
+export type GameEventType = Prisma.GameEventGetPayload<{
+  include: {
+    location: true,
+    prices: true,
+    rules: true,
+    squads: true,
+    tickets: {
+      include: {
+        players: {
+          include: {
+            user: true
+          }
+        }
+      }
+    }
+  }
+}>
+
+
+export type TicketModelType = Prisma.TicketGetPayload<{
+  include: {
+    players: true
+  }
+}>
+
+export type PlayerGameEvent = Prisma.TicketPlayerGetPayload<{
+  include: {
+    user: true
+  }
+}>

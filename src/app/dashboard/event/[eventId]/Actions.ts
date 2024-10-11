@@ -1,13 +1,13 @@
-import { EventModel } from "@/module/Events";
-import { EntryPlayerModel, EventModelType } from "@/module/type";
-import { EventStatus } from "@prisma/client";
+import { GameEventsModel } from "@/module/GameEvents"
+import { GameEventStatus, Prisma } from "@prisma/client"
+
 
 export type EventDetails = {
   event: {
     id: string
     name: string
     date: Date
-    status: EventStatus
+    status: GameEventStatus
   }
   players: {
     totalPlayers: number
@@ -15,7 +15,7 @@ export type EventDetails = {
       name: string
       totalPlayersPresents: number
     }[]
-    list: EntryPlayerModel[]
+    list: Prisma.TicketPlayerGetPayload<{ include: { user: true, squad: true }}>[]
   }
   cronoList: { 
     firstName: string
@@ -27,21 +27,21 @@ export type EventDetails = {
 }
 
 export async function getEventDetails(eventId: string): Promise<EventDetails> {
-  const event = await EventModel.getEventDetails(eventId);
+  const event = await GameEventsModel.getGameEventDetails(eventId);
 
   if (!event) {
     throw new Error('Event not found!')
   }
 
-  const eventStats = EventModel.getEventStats(event as EventModelType)
-  const playersEventDetails = EventModel.getPlayersEventDetails(event as EventModelType)
+  const eventStats = GameEventsModel.getEventStats(event)
+  const playersEventDetails = GameEventsModel.getPlayersEventDetails(event)
 
   return {
     event: {
       id: event.id,
       name: event.name,
       date: event.date,
-      status: event.eventStatus
+      status: event.status
     },
     players: {
       totalPlayers: eventStats.maxPlayersRegister,

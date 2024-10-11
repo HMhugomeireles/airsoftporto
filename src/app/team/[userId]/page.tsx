@@ -16,13 +16,13 @@ export default async function ProfilePage({
 
   return (
     <section className="container">
-      {!Boolean(user.TeamPlayer.length) && (
+      {!Boolean(user.TeamMember.length) && (
         <>
           <section>Create Team</section>
           <section>Join Team</section>
         </>
       ) }
-      {Boolean(user.TeamPlayer.length) && (
+      {Boolean(user.TeamMember.length) && (
         <>
           team name
           

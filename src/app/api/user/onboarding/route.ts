@@ -21,7 +21,10 @@ export async function POST(request: Request) {
         nick: body.nick,
       }
     })
-    console.log(body)
+    // if (userActivation) {
+      
+    // }
+    // console.log(body)
 
     return redirect("/")
   } catch (error) {

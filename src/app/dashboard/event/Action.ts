@@ -1,12 +1,14 @@
-import { EventModel } from "@/module/Events";
-import { EventModelType } from "@/module/type";
+import { GameEventsModel } from "@/module/GameEvents";
+import { GameEventWithStatsType } from "@/module/type";
 
-export async function getAllEvents() {
-  const events = await EventModel.getAllEvents();
+
+export async function getAllEvents(): Promise<GameEventWithStatsType[]> {
+  const events = await GameEventsModel.getAllEvents();
+  console.log(JSON.stringify(events))
 
   const results = events.map(event => ({
     ...event,
-    ...EventModel.getEventStats(event as EventModelType)
+    ...GameEventsModel.getEventStats(event)
   }))
 
   return results

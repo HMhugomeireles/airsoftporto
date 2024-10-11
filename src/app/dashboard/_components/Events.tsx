@@ -3,14 +3,14 @@ import { DialogTrigger } from "@/components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { EventViewType } from "@/module/type"
+import { GameEventWithStatsType } from "@/module/type"
 import { MoreHorizontal } from "lucide-react"
 import Link from "next/link"
 import { EventStatusUI } from "../../../components/EventStatus"
 
 
 type EventsProps = {
-  events: EventViewType[]
+  events: GameEventWithStatsType[]
 }
 
 export function Events({ 
@@ -51,7 +51,7 @@ export function Events({
               </Link>
             </TableCell>
             <TableCell className="hidden md:table-cell">
-              <EventStatusUI eventStatus={event.eventStatus} />
+              <EventStatusUI eventStatus={event.status} />
             </TableCell>
             <TableCell className="hidden md:table-cell">
               <span className="font-semibold text-xl">{event.maxPlayersRegister}</span>/{event.eventMaxPlayers}

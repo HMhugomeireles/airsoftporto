@@ -18,6 +18,8 @@ interface GoogleUser {
   locale: string;
 }
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(req: NextRequest, res: Response) {
   try {
     

@@ -15,7 +15,7 @@ async function getUserTeam(userId: string) {
       id: userId
     },
     select: {
-      TeamPlayer: true
+      TeamMember: true
     }
   })
 }

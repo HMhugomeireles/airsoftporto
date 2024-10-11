@@ -95,17 +95,17 @@ export default async function Onboarding({
                       <Avatar>
                         <AvatarImage
                           className="aspect-square rounded-md object-cover"
-                          src={eventPlayer.player.picture!}
+                          src={eventPlayer.user.picture!}
                           height="34"
                           width="34"
                         />
-                        <AvatarFallback>{getWordFirstLatter(eventPlayer.player.firstName!)}{getWordFirstLatter(eventPlayer.player.lastName!)}</AvatarFallback>
+                        <AvatarFallback>{getWordFirstLatter(eventPlayer.user.firstName!)}{getWordFirstLatter(eventPlayer.user.lastName!)}</AvatarFallback>
                       </Avatar>
                     </TableCell>
                     <TableCell>
-                      <div className="font-medium">{eventPlayer.player.firstName} {eventPlayer.player.lastName}</div>
+                      <div className="font-medium">{eventPlayer.user.firstName} {eventPlayer.user.lastName}</div>
                       <div className="hidden text-sm text-muted-foreground md:inline">
-                        {eventPlayer.player.email}
+                        {eventPlayer.user.email}
                       </div>
                     </TableCell>
                   </TableRow>

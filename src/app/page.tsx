@@ -1,7 +1,7 @@
 import { EventStatusUI } from "@/components/EventStatus"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { EventModel } from "@/module/Events"
+import { GameEventsModel } from "@/module/GameEvents"
 import Link from "next/link"
 
 
@@ -11,7 +11,7 @@ export const metadata = {
 }
 
 export default async function RootLayout() {
-  const events = await EventModel.getAllEvents();
+  const events = await GameEventsModel.getAllEvents();
   return (
     <section className="flex w-full">
       <section className="w-full">
@@ -49,7 +49,7 @@ export default async function RootLayout() {
                   </Link>
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
-                  <EventStatusUI eventStatus={event.eventStatus} />
+                  <EventStatusUI eventStatus={event.status} />
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
                   {/* <span className="font-semibold text-xl">{event.maxPlayersRegister}0</span>/99{event.eventMaxPlayers} */}

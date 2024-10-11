@@ -113,9 +113,9 @@ export function CreateEventForm() {
   }
 
   useEffect(() => {
-    console.log("Is Valid:", isValid);
-    console.log("Is Submitted:", isSubmitted);
-    console.log("Errors:", errors);
+    // console.log("Is Valid:", isValid);
+    // console.log("Is Submitted:", isSubmitted);
+    // console.log("Errors:", errors);
   }, [isValid, isSubmitted, errors]);
 
   return (

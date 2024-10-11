@@ -16,7 +16,7 @@ export function TeamAssociateForm() {
   const [loading, setLoading] = useState<boolean>(false)
   const [playerType, setPlayerType] = useState<"independent" | "team">("independent");
   const { setValue } = useFormContext<z.infer<typeof onboardingFormSchema>>();
-  const [teamList, setTeamList] = useState<TeamType[]| undefined>(undefined);
+  const [teamList, setTeamList] = useState<TeamType[] | undefined>(undefined);
 
   async function handleSearch(e: KeyboardEvent<HTMLInputElement>) {
     const value = e.currentTarget.value;
@@ -26,7 +26,13 @@ export function TeamAssociateForm() {
     }
 
     try {
-      const response = await fetch(`/api/team/searchTeam?teamName=${value}`);
+      const response = await fetch(`/api/team/searchTeam`, {
+        method: 'POST',
+        body: JSON.stringify({ teamName: value }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
       const data = await response.json();
 
       setTeamList(data)
@@ -39,7 +45,7 @@ export function TeamAssociateForm() {
   }
   return (
     <>
-      <PulseLoader 
+      <PulseLoader
         loading={loading}
       />
       <CardHeader className="">
