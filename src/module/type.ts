@@ -1,4 +1,4 @@
-import { GameEventStatus, Prisma, User } from "@prisma/client";
+import { GameEventStatus, Prisma, Squad, User } from "@prisma/client";
 
 
 export type GameEventWithStatsType = GameEventType & {
@@ -55,3 +55,4 @@ export type UserWithTeamType = Prisma.UserGetPayload<{
 
 export type GameEventStatusType = GameEventStatus
 export type UserType = User
+export type SquadType = Squad

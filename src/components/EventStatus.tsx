@@ -1,6 +1,5 @@
 import { Badge } from "@/components/ui/badge"
 import { GameEventStatusType } from "@/module/type"
-// import { GameEventStatus } from "@prisma/client"
 
 
 type EventStatusProps = {

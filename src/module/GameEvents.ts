@@ -1,9 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import { Squad } from "@prisma/client";
-import { GameEventType, TicketModelType } from "./type";
+import { GameEventType, SquadType, TicketModelType } from "./type";
 
 
-function getGameEventMaxPlayers(squads: Squad[]) {
+function getGameEventMaxPlayers(squads: SquadType[]) {
   return {
     eventMaxPlayers: squads.reduce((prev, curr) => prev + curr.maxPlayers, 0)
   }
