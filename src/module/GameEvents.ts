@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { EntryPlayerStatus, Squad } from "@prisma/client";
+import { Squad } from "@prisma/client";
 import { GameEventType, TicketModelType } from "./type";
 
 
@@ -15,15 +15,15 @@ function getNumberPlayersStatus(tickets: TicketModelType[]) {
   let playersStandby = 0;
   for (const ticket of tickets) {
     for (const player of ticket.players) {
-      if (player.entryPlayerStatus === EntryPlayerStatus.ACCEPTED) {
+      if (player.entryPlayerStatus === "ACCEPTED") {
         playersAccepted += 1
         continue;
       }
-      if (player.entryPlayerStatus === EntryPlayerStatus.NOT_ACCEPTED) {
+      if (player.entryPlayerStatus === "NOT_ACCEPTED") {
         playersNotAccepted += 1
         continue;
       }
-      if (player.entryPlayerStatus === EntryPlayerStatus.STANDBY) {
+      if (player.entryPlayerStatus === "STANDBY") {
         playersStandby += 1
         continue;
       }
