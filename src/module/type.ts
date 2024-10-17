@@ -1,4 +1,4 @@
-import { GameEventStatus, Prisma, Squad, User } from "@prisma/client";
+import { GameEventStatus, Prisma, Squad, TeamMember, User } from "@prisma/client";
 
 
 export type GameEventWithStatsType = GameEventType & {
@@ -40,10 +40,10 @@ export type PlayerGameEvent = Prisma.TicketPlayerGetPayload<{
   }
 }>
 
-export type TicketPlayerType = Prisma.TicketPlayerGetPayload<{ 
-  include: { 
-    user: true, 
-    squad: true 
+export type TicketPlayerType = Prisma.TicketPlayerGetPayload<{
+  include: {
+    user: true,
+    squad: true
   }
 }>
 
@@ -52,6 +52,32 @@ export type UserWithTeamType = Prisma.UserGetPayload<{
     TeamMember: true
   }
 }>
+
+export type UserWithTeamMembers = Prisma.UserGetPayload<{
+  include: {
+    TeamMember: {
+      include: {
+        Team: {
+          include: {
+            members: {
+              include: {
+                player: true
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}>
+
+export type GroupUserTeamWithMembersType = User & {
+  team: {
+    id: string;
+    name: string;
+  } | undefined
+  members: TeamMember[]
+}
 
 export type GameEventStatusType = GameEventStatus
 export type UserType = User

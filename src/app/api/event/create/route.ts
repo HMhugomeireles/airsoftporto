@@ -45,10 +45,10 @@ export async function POST(request: Request) {
       }
     })
 
-    return NextResponse.json({})
+    return NextResponse.json({ error: undefined, eventId: result.id })
   } catch (error) {
     console.error(error)
-    return NextResponse.json({})
+    return NextResponse.json({ error: 'Error in create the event, try again!', eventId: undefined })
   }
 }
 

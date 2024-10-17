@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
+import { randomBytes } from 'crypto';
 import { twMerge } from "tailwind-merge";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -38,4 +39,20 @@ export function validateNIF(nif: string): boolean {
   const comparator = modulo11 === 1 || modulo11 === 0 ? 0 : 11 - modulo11;
   
   return Number(nif[8]) === comparator; 
+}
+
+export function getBaseURl() {
+  return process.env.NODE_ENV === "production" ? `${process.env.NEXT_PUBLIC_BASE_URL}` : `http://localhost:3000`
+}
+
+export function formatDate(date: Date): string {
+  return date.toLocaleDateString('pt-PT', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
+export function generateToken() {
+  return randomBytes(10).toString('hex');
 }

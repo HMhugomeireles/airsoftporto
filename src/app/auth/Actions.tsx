@@ -1,8 +1,10 @@
 'use server'
+import { lucia } from "@/lib/lucia";
 import { facebookOAuthClient } from "@/lib/providers/facebookOauth";
 import { googleOAuthClient } from "@/lib/providers/googleOauth";
 import { generateCodeVerifier, generateState } from "arctic";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 
 type ConsentUrlResult = {
@@ -99,8 +101,8 @@ export async function getFaceBookConsentUrl(): Promise<ConsentUrlResult> {
 //   return { success: true }
 // }
 
-// export const logOut = async () => {
-//   const sessionCookie = await lucia.createBlankSessionCookie()
-//   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
-//   return redirect('/authenticate')
-// }
+export const logOut = async () => {
+  const sessionCookie = await lucia.createBlankSessionCookie()
+  cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
+  return redirect('/')
+}

@@ -11,10 +11,13 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { getWordFirstLatter, randomUuid } from "@/lib/utils"
 import { UserModel } from "@/module/Users"
+import { MoreHorizontal } from "lucide-react"
 import Link from "next/link"
 import { FaCheckSquare } from "react-icons/fa"
 import { IoCloseCircle } from "react-icons/io5"
@@ -45,9 +48,9 @@ export default async function UsersPage() {
         <section className="p-4">
           <Card x-chunk="dashboard-06-chunk-0">
             <CardHeader>
-              <CardTitle>Events</CardTitle>
+              <CardTitle>Users</CardTitle>
               <CardDescription>
-                Manage your events and view their status.
+                Manage users and disable/enable users.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -59,45 +62,69 @@ export default async function UsersPage() {
                     <TableHead>Partner</TableHead>
                     <TableHead>Role</TableHead>
                     <TableHead>Account status</TableHead>
+                    <TableHead>
+                      <span className="sr-only">Actions</span>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                {users.map(user => (
-                  <TableRow key={randomUuid()} className="bg-accent">
-                    <TableCell className="hidden sm:table-cell">
-                      <Avatar>
-                        <AvatarImage
-                          className="aspect-square rounded-md object-cover"
-                          src={user.picture!}
-                          height="34"
-                          width="34"
-                        />
-                        <AvatarFallback>{getWordFirstLatter(user.firstName!)}{getWordFirstLatter(user.lastName!)}</AvatarFallback>
-                      </Avatar>
-                    </TableCell>
-                    <TableCell>
-                      <div className="font-medium">{user.firstName} {user.lastName}</div>
-                      <div className="hidden text-sm text-muted-foreground md:inline">
-                        {user.email}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-center">{user.partner ? 
-                      (
-                        <FaCheckSquare className="text-green-600 text-2xl" />
-                      ): (
-                        <IoCloseCircle className="text-red-600 text-2xl" />
-                      )}
-                    </TableCell>
-                    <TableCell>{user.role.map((role: string) => (
-                      <div className="m-2" key={randomUuid()}>{role}</div>
-                    ))}</TableCell>
-                    <TableCell>{user.active ? (
-                      <Badge>Active</Badge>
-                    ): (
-                      <Badge>Standby</Badge>
-                    )}</TableCell>
-                  </TableRow>
-                ))}
+                  {users.map(user => (
+                    <TableRow key={randomUuid()} className="bg-accent">
+                      <TableCell className="hidden sm:table-cell">
+                        <Avatar>
+                          <AvatarImage
+                            className="aspect-square rounded-md object-cover"
+                            src={user.picture!}
+                            height="34"
+                            width="34"
+                          />
+                          <AvatarFallback>{getWordFirstLatter(user.firstName!)}{getWordFirstLatter(user.lastName!)}</AvatarFallback>
+                        </Avatar>
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium">{user.firstName} {user.lastName}</div>
+                        <div className="hidden text-sm text-muted-foreground md:inline">
+                          {user.email}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-center">{user.partner ?
+                        (
+                          <FaCheckSquare className="text-green-600 text-2xl" />
+                        ) : (
+                          <IoCloseCircle className="text-red-600 text-2xl" />
+                        )}
+                      </TableCell>
+                      <TableCell>{user.role.map((role: string) => (
+                        <div className="m-2" key={randomUuid()}>{role}</div>
+                      ))}</TableCell>
+                      <TableCell>{user.active ? (
+                        <Badge>Active</Badge>
+                      ) : (
+                        <Badge>Standby</Badge>
+                      )}</TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              aria-haspopup="true"
+                              size="icon"
+                              variant="ghost"
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                              <span className="sr-only">Toggle menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <Separator />
+                            <DropdownMenuItem>
+                              <DialogTrigger>Edit</DialogTrigger>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </CardContent>
@@ -111,10 +138,9 @@ export default async function UsersPage() {
         </section>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Duplicate event</DialogTitle>
+            <DialogTitle>User editing</DialogTitle>
             <DialogDescription>
-              This action will create new event with the same information this event have.
-              You can edit later the event information.
+              This will update user information about partner, role, account status.
             </DialogDescription>
           </DialogHeader>
           <div>

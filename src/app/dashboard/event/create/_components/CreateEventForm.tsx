@@ -26,7 +26,7 @@ import { randomUuid } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { PlusCircle } from "lucide-react"
 import Link from "next/link"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { FormProvider, useFieldArray, useForm } from "react-hook-form"
 import { LuDot } from "react-icons/lu"
 import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md"
@@ -37,10 +37,16 @@ import { AddTeam, TeamData } from "./add-team"
 import { AddTicketPrice } from "./add-ticket-price"
 
 import { Toaster } from "@/components/ui/sonner"
+import { Spinner } from "@/components/ui/spinner"
+import { toast } from "@/components/ui/use-toast"
+import { useRouter } from 'next/navigation'
 import { formSchema } from "../shcema"
 
+type CreateEventResponseType = { error: string, eventId: string }
 
 export function CreateEventForm() {
+  const [showLoading, setShowLoading] = useState(false)
+  const router = useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -72,10 +78,10 @@ export function CreateEventForm() {
       gameGoals: [{
         goal: 'Pegar nos bidões um de cada vez e trazer para sua base.'
       }],
-      rules: [{rule: 'test'}],
+      rules: [{ rule: 'test' }],
       ticketPrices: [
-        { amount: 3, type: 'partner'},
-        { amount: 4, type: 'normal'}
+        { amount: 3, type: 'partner' },
+        { amount: 4, type: 'normal' }
       ]
     },
   })
@@ -99,6 +105,7 @@ export function CreateEventForm() {
   const { formState: { isValid, isSubmitted, errors } } = form
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
+    setShowLoading(prev => !prev)
     const response = await fetch('/api/event/create', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -106,10 +113,19 @@ export function CreateEventForm() {
         "Content-Type": "application/json"
       }
     })
-    const responseData = await response.json();
+    const { error, eventId }: CreateEventResponseType = await response.json();
 
-    console.log({responseData})
-    console.log({data})
+    if (error) {
+      toast({
+        variant: 'destructive',
+        title: error
+      })
+      setShowLoading(prev => !prev)
+      return;
+    }
+
+    router.push('/dashboard/event')
+    return;
   }
 
   useEffect(() => {
@@ -120,6 +136,13 @@ export function CreateEventForm() {
 
   return (
     <>
+      {showLoading && (
+        <div className="fixed inset-0 z-50 bg-black/80  overflow-hidden w-full h-full">
+          <div className="flex justify-center items-center h-full">
+            <Spinner />
+          </div>
+        </div>
+      )}
       <Toaster richColors />
       <FormProvider {...form}>
         <form
@@ -496,7 +519,7 @@ export function CreateEventForm() {
                             <DialogTitle>Create game goals</DialogTitle>
                           </DialogHeader>
                           <AddTicketPrice
-                            onAddData={function (data: { amount: number, type: 'partner' | 'normal'}[]) {
+                            onAddData={function (data: { amount: number, type: 'partner' | 'normal' }[]) {
                               ticketPricesFields.append(data)
                             }}
                           >

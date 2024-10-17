@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
+import { getBaseURl } from "@/lib/utils";
 import { NextResponse } from "next/server";
 
 export const dynamic = 'force-dynamic'
@@ -28,8 +28,8 @@ export async function GET(req: Request) {
     if (event === null || ticket === null || !event?.id && !ticket?.id) {
       return NextResponse.json({ message: "Not found" }, { status: 400 });
     }
-
-    return redirect(`/dashboard/event/ticket/${event.id}/${ticket.id}`)
+    
+    return NextResponse.redirect(`${getBaseURl()}/dashboard/event/ticket/${event.id}/${ticket.id}`)
   } catch (error) {
     console.error('Error validate ticket:', error);
 

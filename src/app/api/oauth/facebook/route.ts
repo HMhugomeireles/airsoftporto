@@ -2,10 +2,9 @@ import { ROLES } from "@/lib/constants";
 import { lucia } from "@/lib/lucia";
 import { prisma } from "@/lib/prisma";
 import { facebookOAuthClient } from "@/lib/providers/facebookOauth";
-import { randomUuid } from "@/lib/utils";
+import { getBaseURl, randomUuid } from "@/lib/utils";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 interface FacebookUser {
   first_name: string;
@@ -53,9 +52,9 @@ export const GET = async (req: NextRequest) => {
     const sessionCookie = await lucia.createSessionCookie(session.id)
     cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
 
-    return redirect(`/onboarding/${userId}`)
+    return NextResponse.redirect(`${getBaseURl()}/onboarding/${userId}`)
   } catch (error: any) {
-    return redirect('/')
+    return NextResponse.redirect(getBaseURl())
   }
 }
 

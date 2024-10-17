@@ -1,15 +1,17 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 
 export default function Template({ children }: { children: React.ReactNode }) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ ease: 'easeInOut', duration: 0.55 }}
-    >
-      {children}
-    </motion.div>
+    <AnimatePresence mode='popLayout'>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ ease: 'easeInOut', duration: 0.55 }}
+      >
+        {children}
+      </motion.div>
+    </AnimatePresence>
   )
 }

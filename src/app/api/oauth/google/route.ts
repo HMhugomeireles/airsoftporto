@@ -2,10 +2,9 @@ import { ROLES } from '@/lib/constants';
 import { lucia } from '@/lib/lucia';
 import { prisma } from '@/lib/prisma';
 import { googleOAuthClient } from '@/lib/providers/googleOauth';
-import { randomUuid } from '@/lib/utils';
+import { getBaseURl, randomUuid } from '@/lib/utils';
 import { cookies } from "next/headers";
-import { redirect } from 'next/navigation';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 interface GoogleUser {
   id: string;
@@ -20,7 +19,7 @@ interface GoogleUser {
 
 export const dynamic = 'force-dynamic'
 
-export async function GET(req: NextRequest, res: Response) {
+export async function GET(req: NextRequest, res: NextResponse) {
   try {
     
     const url = new URL(req.url);
@@ -70,10 +69,10 @@ export async function GET(req: NextRequest, res: Response) {
     const sessionCookie = await lucia.createSessionCookie(session.id)
     cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
   
-    return redirect(`/onboarding/${userId}`)
+    return NextResponse.redirect(`${getBaseURl()}/onboarding/${userId}`)
   } catch (error) {
     console.log(error)
-    return redirect('/')
+    return NextResponse.redirect(getBaseURl())
   }
 }
 

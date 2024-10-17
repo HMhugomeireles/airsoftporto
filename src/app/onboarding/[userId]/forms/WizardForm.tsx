@@ -84,7 +84,7 @@ export function WizardForm({
           <CardFooter className="flex justify-between">
             {step < 1 && <div className="w-full flex justify-end"><Button type="button" onClick={nextStep}>Next</Button></div>}
             {step > 0 && <Button type="button" onClick={prevStep}>Previous</Button>}
-            {step === 1 && <Button type="submit">Submit</Button>}
+            {step === 1 && <Button disabled={form.formState.isSubmitting} type="submit">Submit</Button>}
           </CardFooter>
         </Card>
       </form>

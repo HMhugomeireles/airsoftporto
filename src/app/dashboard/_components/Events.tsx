@@ -3,6 +3,7 @@ import { DialogTrigger } from "@/components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { formatDate } from "@/lib/utils"
 import { GameEventWithStatsType } from "@/module/type"
 import { MoreHorizontal } from "lucide-react"
 import Link from "next/link"
@@ -43,11 +44,7 @@ export function Events({
             </Link>
             <TableCell>
               <Link href={`/dashboard/event/${event.id}`}>
-                {event.date.toLocaleDateString('pt-PT', {
-                  day: '2-digit',
-                  month: 'long',
-                  year: 'numeric',
-                })}
+                {formatDate(event.date)}
               </Link>
             </TableCell>
             <TableCell className="hidden md:table-cell">
