@@ -29,7 +29,7 @@ export type User = {
     hasAdminPrecision: boolean;
 }
 
-async function getUserSession() {
+export async function getUserSession() {
     const sessionId = cookies().get(lucia.sessionCookieName)?.value || null
     if (!sessionId) {
         return undefined
@@ -46,7 +46,10 @@ async function getUserSession() {
             cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
         }
 
-        return user
+        return { 
+            user,
+            session
+        }
     } catch (error) {
         return undefined
     }
@@ -54,11 +57,15 @@ async function getUserSession() {
 
 export const getUser = async () => {
     try {
-        const user = await getUserSession();
+        const userCookie = await getUserSession();
+
+        if (!userCookie?.user) {
+            throw new Error('User session not found!')
+        }
 
         const dbUser = await prisma.user.findUnique({
             where: {
-                id: user?.id
+                id: userCookie.user?.id
             },
             select: {
                 id: true,
@@ -98,13 +105,16 @@ export async function getUserAuthorization() {
 
 export async function getUserTeamDetails(): Promise<UserWithTeamMembers | undefined> {
     try {
-        const user = await getUserSession();
+        const userCookie = await getUserSession();
         
-        if (!user) {
-            return undefined;
+        if (!userCookie?.user) {
+            throw new Error('User session not found!')
         }
 
         const userWithTeam = await prisma.user.findFirst({
+            where: {
+                id: userCookie.user.id
+            },
             include: {
                 TeamMember: {
                     include: {
