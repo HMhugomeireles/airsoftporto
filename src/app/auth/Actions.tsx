@@ -1,5 +1,5 @@
 'use server'
-import { lucia } from "@/lib/lucia";
+import { getUserSession, lucia } from "@/lib/lucia";
 import { facebookOAuthClient } from "@/lib/providers/facebookOauth";
 import { googleOAuthClient } from "@/lib/providers/googleOauth";
 import { generateCodeVerifier, generateState } from "arctic";
@@ -102,7 +102,16 @@ export async function getFaceBookConsentUrl(): Promise<ConsentUrlResult> {
 // }
 
 export const logOut = async () => {
-  const sessionCookie = await lucia.createBlankSessionCookie()
-  cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
+  const userCookie = await getUserSession();
+
+  if (!userCookie?.session) {
+    throw new Error('User session not found!')
+  }
+
+  await lucia.invalidateSession(userCookie.session?.id);
+  await lucia.deleteExpiredSessions();
+
+  // const sessionCookie = await lucia.createBlankSessionCookie()
+  // cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
   return redirect('/')
 }
