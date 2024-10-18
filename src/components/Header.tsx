@@ -21,16 +21,18 @@ export async function Header() {
                 <div className="absolute inset-y-0 right-0 flex items-center lg:hidden">
                   <MenuButton />
                 </div>
-                <div className="flex flex-shrink-0 items-center">
-                  <div className="flex items-center text-white font-extrabold">
-                    <Image className="h-14 w-14" width={50} height={50} src="/cap_logo.png" alt="logo cap" />
-                    <div className="ml-2 text-sm uppercase">
-                      <div>Club</div>
-                      <div>Airsoft</div>
-                      <div>Porto</div>
+                <Link href={`/`}>
+                  <div className="flex flex-shrink-0 items-center">
+                    <div className="flex items-center text-white font-extrabold">
+                      <Image className="h-14 w-14" width={50} height={50} src="/cap_logo.png" alt="logo cap" />
+                      <div className="ml-2 text-sm uppercase">
+                        <div>Club</div>
+                        <div>Airsoft</div>
+                        <div>Porto</div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
                 <div className="hidden lg:flex lg:items-center lg:ml-6">
                   <div className="flex space-x-4 items-center">
                     {user ? (
