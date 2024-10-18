@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { TeamMember } from "@prisma/client";
-import { GroupUserTeamWithMembersType, UserType, UserWithTeamMembers, UserWithTeamType } from "./type";
+import { GroupUserTeamWithMembersType, TeamMemberWithUser, UserType, UserWithTeamMembers, UserWithTeamType } from "./type";
 
 export async function getUserInformation(userId: string) {
   return await prisma.user.findUnique({
@@ -30,7 +29,7 @@ async function getAllUsers(): Promise<UserType[]> {
 
 function groupUserTeamWithMembers(user: UserWithTeamMembers): GroupUserTeamWithMembersType {
   const { TeamMember, ...userDetails  } = user;
-  let members: TeamMember[] | [] = []
+  let members: TeamMemberWithUser[] | [] = []
   let team = undefined
   user.TeamMember.map(item => {
     if (item.Team) {
@@ -38,12 +37,12 @@ function groupUserTeamWithMembers(user: UserWithTeamMembers): GroupUserTeamWithM
         id: item.Team?.id,
         name: item.Team?.name
       }
-      members = item.Team.members
+      members = item.Team.members.filter(member => member.player.id !== user.id)
     }
   })
 
   return {
-    user: userDetails,
+    ...userDetails,
     team,
     members
   }

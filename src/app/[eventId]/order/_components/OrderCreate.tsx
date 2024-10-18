@@ -2,7 +2,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -12,12 +15,14 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { formatDate, generateToken, getWordFirstLatter } from "@/lib/utils";
-import { GameEventType, GroupUserTeamWithMembersType } from "@/module/type";
+import { formatDate, generateToken, getWordFirstLatter, handleNullStringValue, randomUuid } from "@/lib/utils";
+import { GameEventType, GroupUserTeamWithMembersType, TeamMemberWithUser } from "@/module/type";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { FaBarcode } from "react-icons/fa";
+import { useState } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { FaBarcode, FaUserPlus, FaUserTimes } from "react-icons/fa";
 import { FaHandshakeSlash } from "react-icons/fa6";
+import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { MdOutlinePayment } from "react-icons/md";
 import { PiHandshakeFill } from "react-icons/pi";
 import { z } from "zod";
@@ -32,20 +37,64 @@ export function OrderCreate({
   eventDetails,
   user
 }: OrderCreateProps) {
+  const [teamMembers, setTeamMembers] = useState<string[]>([])
+  const [isSameTeam, setIsSameTeam] = useState(true);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       orderCode: `${new Date().getTime()}-${generateToken()}`,
+      allInSameSquad: true,
       defaultPlayer: {
-        name: '',
-        apdName: '',
-        apdNumber: '',
-        ticketType: "normalTicket",
+        name: `${handleNullStringValue(user.firstName)} ${handleNullStringValue(user.lastName)}`,
+        apdName: `${handleNullStringValue(user.apdName)}`,
+        apdNumber: user.apdNumber,
+        ticketType: user.partner ? "partner" : "normal",
         squadId: ''
       },
+      teamMembersSelect: [],
       extraPlayers: []
     }
   })
+  const extraPlayersFields = useFieldArray({
+    name: 'extraPlayers',
+    control: form.control
+  })
+  const teamMembersSelectFields = useFieldArray({
+    name: 'teamMembersSelect',
+    control: form.control
+  })
+
+  function calculateTotalTicket() {
+    const defaultPlayerAmount = eventDetails.prices.find(price => price.type === form.getValues().defaultPlayer.ticketType)?.amount
+    const defaultPlayer = defaultPlayerAmount === undefined ? 0 : defaultPlayerAmount;
+    const extraPlayers = form.getValues().extraPlayers.map(player => eventDetails.prices.find(price => price.type === player.ticketType)?.amount).filter(item => item !== undefined)
+    const teamMembersSelect = form.getValues().teamMembersSelect.map(player => eventDetails.prices.find(price => price.type === player.ticketType)?.amount).filter(item => item !== undefined)
+
+    const teamMembersSelectAmount = teamMembersSelect.reduce((previousValue: number, currentValue: number) => previousValue + currentValue, 0)
+    const extraPlayersTotalAmount = extraPlayers.reduce((previousValue: number, currentValue: number) => previousValue + currentValue, 0)
+
+    return extraPlayersTotalAmount + defaultPlayer + teamMembersSelectAmount;
+  }
+
+  function handleTeamPlayerSelect(e: React.MouseEvent<HTMLElement>, member: TeamMemberWithUser) {
+    if (teamMembers.includes(member.id)) {
+      const index = form.getValues().teamMembersSelect.findIndex(memberSelect => memberSelect.memberId === member.id)
+      teamMembersSelectFields.remove(index)
+      return setTeamMembers(prev => prev.filter((item: string) => item !== member.id));
+    }
+    teamMembersSelectFields.append({
+      memberId: member.id,
+      name: `${handleNullStringValue(member.player.firstName)} ${handleNullStringValue(member.player.lastName)}`,
+      ticketType: member.player.partner ? "partner" : "normal",
+      squadId: ''
+    })
+    return setTeamMembers([...teamMembers, member.id])
+  }
+
+  function handleRemovePlayer(playerId: string) {
+    const index = form.getValues().extraPlayers.findIndex(player => player.id === playerId)
+    return extraPlayersFields.remove(index)
+  }
 
   return (
     <Form
@@ -83,13 +132,17 @@ export function OrderCreate({
                 <div className="flex justify-between items-center">
                   <FormField
                     control={form.control}
-                    name="defaultPlayer.squadId"
+                    name={`defaultPlayer.squadId`}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Squad</FormLabel>
                         <FormControl>
-                          <Select {...field}>
-                            <SelectTrigger className="w-[200px]">
+                          <Select
+                            onValueChange={(value) => field.onChange(value)}
+                            defaultValue={field.value}
+                            {...field}
+                          >
+                            <SelectTrigger className="w-60">
                               <SelectValue placeholder="Select a squad" />
                             </SelectTrigger>
                             <SelectContent>
@@ -101,9 +154,6 @@ export function OrderCreate({
                             </SelectContent>
                           </Select>
                         </FormControl>
-                        <FormDescription>
-                          This is your public display name.
-                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -125,6 +175,24 @@ export function OrderCreate({
                     </div>
                   </div>
                 </div>
+                <FormField
+                  control={form.control}
+                  name="allInSameSquad"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Label htmlFor="allInSameSquad" className="mt-6 flex items-center cursor-pointer">
+                          <div className="mr-2">Your colleges in the same squad than you?</div>
+                          <Checkbox id="allInSameSquad" 
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </Label>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </CardContent>
             </Card>
           </div>
@@ -132,47 +200,53 @@ export function OrderCreate({
             {user.team
               ? (
                 <Card className="sm:col-span-2 lg:col-span-4 bg-muted/20" x-chunk="dashboard-05-chunk-0">
-                  <CardContent className="pt-5">
-                    <div>Team members</div>
-                    <div>
-                      {user.members.map(member => (
+                  <CardHeader>
+                    <CardTitle>{user.team.name}</CardTitle>
+                    <CardDescription>Team members</CardDescription>
+                    <CardDescription>Select team member to add the ticket order.</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap">
+                      {user.members.map((member: TeamMemberWithUser, index: number) => (
                         <Card
                           key={member.id}
-                          className="sm:col-span-2 lg:col-span-4 bg-muted/20" x-chunk="dashboard-05-chunk-0"
+                          className={`select-none relative cursor-pointer transition-colors ${teamMembers.includes(member.id) ? 'border-green-600 bg-green-600/10' : 'bg-muted/20'}`}
+                          onClick={(e: React.MouseEvent<HTMLElement>) => handleTeamPlayerSelect(e, member)}
                         >
-                          <CardContent className="pt-5">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center">
-                                <Avatar className="w-20 h-20">
-                                  <AvatarImage src={user.picture!} />
-                                  <AvatarFallback>{getWordFirstLatter(user.firstName!)}{getWordFirstLatter(user.lastName!)}</AvatarFallback>
-                                </Avatar>
-                                <div className="ml-4">
-                                  <div className="text-xl">{user.firstName}<span className="font-bold text-2xl">{user.nick && `"${user.nick}"`}</span>{user.lastName}</div>
-                                  <div className="flex items-center">
-                                    <span className="mr-2">Partner:</span>
-                                    {user.partner
-                                      ? <div><PiHandshakeFill className="text-green-700 w-5 h-5" /></div>
-                                      : <div><FaHandshakeSlash className="text-red-700 w-5 h-5" /></div>
-                                    }
-                                  </div>
+                          {teamMembers.includes(member.id) && (
+                            <div className="absolute top-1 right-1 "><IoMdCheckmarkCircleOutline className="w-6 h-6 text-green-600" /></div>
+                          )}
+                          <CardContent className="pt-6">
+                            <div className="flex items-center">
+                              <Avatar className="w-20 h-20">
+                                <AvatarImage src={member.player.picture!} />
+                                <AvatarFallback>{getWordFirstLatter(member.player.firstName!)}{getWordFirstLatter(member.player.lastName!)}</AvatarFallback>
+                              </Avatar>
+                              <div className="ml-4">
+                                <div className="text-xl">{member.player.firstName}<span className="font-bold text-2xl">{member.player.nick && `"${member.player.nick}"`}</span>{member.player.lastName}</div>
+                                <div className="flex items-center">
+                                  <span className="mr-2">Partner:</span>
+                                  {member.player.partner
+                                    ? <div><PiHandshakeFill className="text-green-700 w-5 h-5" /></div>
+                                    : <div><FaHandshakeSlash className="text-red-700 w-5 h-5" /></div>
+                                  }
                                 </div>
                               </div>
-                              <div className="text-center">
-                                <div>Ticket</div>
-                                <FaBarcode className="w-20 h-20" />
-                              </div>
                             </div>
-                            <div className="flex justify-between items-center">
+                            {!form.getValues().allInSameSquad && (
                               <FormField
                                 control={form.control}
-                                name="defaultPlayer.squadId"
+                                name={`teamMembersSelect.${index}.squadId`}
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel>Squad</FormLabel>
                                     <FormControl>
-                                      <Select {...field}>
-                                        <SelectTrigger className="w-[200px]">
+                                      <Select
+                                        onValueChange={(value) => field.onChange(value)}
+                                        defaultValue={field.value}
+                                        {...field}
+                                      >
+                                        <SelectTrigger className="">
                                           <SelectValue placeholder="Select a squad" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -184,37 +258,17 @@ export function OrderCreate({
                                         </SelectContent>
                                       </Select>
                                     </FormControl>
-                                    <FormDescription>
-                                      This is your public display name.
-                                    </FormDescription>
                                     <FormMessage />
                                   </FormItem>
                                 )}
                               />
-                              <div className="w-20 text-center">
-                                <div>Price</div>
-                                <div>
-                                  {eventDetails.prices.map(price => {
-                                    if (user.partner && price.type === 'partner') {
-                                      return price;
-                                    }
-                                    if (price.type === 'normal' && !user.partner) {
-                                      return price;
-                                    }
-                                    return undefined
-                                  })
-                                    .filter(item => item !== undefined)
-                                    .at(0)?.amount}€
-                                </div>
-                              </div>
-                            </div>
+                            )}
                           </CardContent>
                         </Card>
                       ))}
                     </div>
                   </CardContent>
                 </Card>
-
               ) : (
                 <div>{'Independente'}</div>
               )}
@@ -222,9 +276,105 @@ export function OrderCreate({
           <div>
             <Card className="sm:col-span-2 lg:col-span-4 bg-muted/20" x-chunk="dashboard-05-chunk-0">
               <CardContent className="pt-5">
-                <div>Extra players</div>
-
+                <h3>Extra players</h3>
+                {extraPlayersFields.fields.map((field, index) => (
+                  <section key={index} className="mt-6">
+                    <section className="mb-5">
+                      <div className="flex justify-between items-center">
+                        <div className="text-blue-500">#{index + 1} Friend</div>
+                        <div><FaUserTimes className="text-red-500 cursor-pointer" onClick={() => handleRemovePlayer(field.id)} /></div>
+                      </div>
+                      <div className="my-4">Ticket price: {eventDetails.prices.find(price => price.type === 'normal')?.amount}€</div>
+                      <div className="my-2">
+                        <FormField
+                          control={form.control}
+                          name={`extraPlayers.${index}.name`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Name*</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Insert player name" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div className="flex justify-between">
+                        <div className="my-2 mr-4 w-1/2">
+                          <FormField
+                            control={form.control}
+                            name={`extraPlayers.${index}.apdName`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>APD Name</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Insert APD name" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <div className="my-2 w-1/2">
+                          <FormField
+                            control={form.control}
+                            name={`extraPlayers.${index}.apdNumber`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>APD number</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Insert APD number" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+                      {!form.getValues().allInSameSquad && (
+                        <div>
+                          <FormField
+                            control={form.control}
+                            name={`extraPlayers.${index}.squadId`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Squad</FormLabel>
+                                <FormControl>
+                                  <Select
+                                    onValueChange={(value) => field.onChange(value)}
+                                    defaultValue={field.value}
+                                    {...field}
+                                  >
+                                    <SelectTrigger className="">
+                                      <SelectValue placeholder="Select a squad" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectGroup>
+                                        {eventDetails.squads.map(squad => (
+                                          <SelectItem key={squad.id} value={squad.id}>{squad.name}</SelectItem>
+                                        ))}
+                                      </SelectGroup>
+                                    </SelectContent>
+                                  </Select>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      )}
+                    </section>
+                    <Separator />
+                  </section>
+                ))}
               </CardContent>
+              <CardFooter className="pt-6 flex justify-center border-t">
+                <Button
+                  onClick={() => extraPlayersFields.append({ id: randomUuid(), apdName: '', apdNumber: '', name: '', ticketType: "normal", squadId: '' })}
+                  variant="outline"><FaUserPlus className="mr-2"
+                  /> Add Friends</Button>
+              </CardFooter>
             </Card>
           </div>
           <div>
@@ -249,34 +399,32 @@ export function OrderCreate({
                 <ul className="grid gap-3">
                   <li className="flex items-center justify-between">
                     <span className="text-muted-foreground">
-                      Ticket - no partner
+                      Ticket - {form.getValues().defaultPlayer.name}
                     </span>
-                    <span>$4.00</span>
+                    <span>{eventDetails.prices.find(price => price.type === form.getValues().defaultPlayer.ticketType)?.amount.toFixed(2)}€</span>
                   </li>
-                  <li className="flex items-center justify-between">
-                    <span className="text-muted-foreground">
-                      Ticket - no partner
-                    </span>
-                    <span>$4.00</span>
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span className="text-muted-foreground">
-                      Ticket - no partner
-                    </span>
-                    <span>$4.00</span>
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span className="text-muted-foreground">
-                      Ticket - no partner
-                    </span>
-                    <span>$4.00</span>
-                  </li>
+                  {form.getValues().teamMembersSelect.map(teamMemberSelect => (
+                    <li key={teamMemberSelect.memberId} className="flex items-center justify-between">
+                      <span className="text-muted-foreground">
+                        Ticket - {teamMemberSelect.name}
+                      </span>
+                      <span>{eventDetails.prices.find(price => price.type === teamMemberSelect.ticketType)?.amount.toFixed(2)}€</span>
+                    </li>
+                  ))}
+                  {form.getValues().extraPlayers.map(extraPlayer => (
+                    <li key={extraPlayer.id} className="flex items-center justify-between">
+                      <span className="text-muted-foreground">
+                        Ticket - {extraPlayer.name}
+                      </span>
+                      <span>{eventDetails.prices.find(price => price.type === extraPlayer.ticketType)?.amount.toFixed(2)}€</span>
+                    </li>
+                  ))}
                 </ul>
                 <Separator className="my-2" />
                 <ul className="grid gap-3">
                   <li className="flex items-center justify-between font-semibold">
                     <span className="text-muted-foreground">Total</span>
-                    <span>$16.00</span>
+                    <span>{calculateTotalTicket().toFixed(2)}€</span>
                   </li>
                 </ul>
               </div>

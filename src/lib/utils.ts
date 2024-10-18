@@ -26,6 +26,9 @@ export function formatLastName(fullName: string) {
 }
 
 export function getWordFirstLatter(word: string) {
+  if (!word) {
+    return ''
+  }
   return word.charAt(0);
 }
 
@@ -55,4 +58,8 @@ export function formatDate(date: Date): string {
 
 export function generateToken() {
   return randomBytes(10).toString('hex');
+}
+
+export function handleNullStringValue(value: unknown) {
+  return value === null ? '' : value
 }
