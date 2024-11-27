@@ -1,3 +1,4 @@
+import { RedirectButton } from "@/components/RedirectButton";
 import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
@@ -75,7 +76,7 @@ export default async function EventPage({
                 <section className="mb-6">
                   <div className="uppercase font-extrabold text-xs">Location</div>
                   <div>{eventDetails.location.street}</div>
-                  <div>{eventDetails.location.directions}</div>
+                  <div><RedirectButton variant="outline" url={eventDetails.location.directions}>Maps</RedirectButton></div>
                 </section>
 
                 <section className="mb-6">

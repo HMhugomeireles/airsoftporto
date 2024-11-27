@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { GroupUserTeamWithMembersType, TeamMemberWithUser, UserType, UserWithTeamMembers, UserWithTeamType } from "./type";
 
-export async function getUserInformation(userId: string) {
+async function getUserInformation(userId: string) {
   return await prisma.user.findUnique({
     where: {
       id: userId
@@ -51,5 +51,6 @@ function groupUserTeamWithMembers(user: UserWithTeamMembers): GroupUserTeamWithM
 export const UserModel = {
   getUserTeam,
   getAllUsers,
-  groupUserTeamWithMembers
+  groupUserTeamWithMembers,
+  getUserInformation
 }

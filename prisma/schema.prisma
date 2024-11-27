@@ -130,14 +130,14 @@ model Ticket {
   id            String         @id @map("_id")
   date          DateTime
   ticketQRToken String
-  transactionId String?
   status        TicketStatus   @default(UNPAYED)
-  totalPrice    Float
+  totalPrice    Int
+  transactionId String?
   players       TicketPlayer[]
 
   GameEvent   GameEvent? @relation(fields: [gameEventId], references: [id])
   gameEventId String?
-}
+} 
 
 enum TicketStatus {
   PAYED

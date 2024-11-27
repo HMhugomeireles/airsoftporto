@@ -1,4 +1,4 @@
-import { getUserInformation } from "@/module/Users";
+import { UserModel } from "@/module/Users";
 import { redirect, RedirectType } from "next/navigation";
 import { WizardForm } from "./forms/WizardForm";
 
@@ -7,7 +7,7 @@ export default async function Onboarding({
 }: {
   params: { userId: string }
 }) {
-  const user = await getUserInformation(params.userId)
+  const user = await UserModel.getUserInformation(params.userId)
 
   if (!user || user.active) {
     return redirect('/', RedirectType.push);

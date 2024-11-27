@@ -1,5 +1,7 @@
 import { UserWithTeamMembers } from '@/module/type'
+import { UserModel } from '@/module/Users'
 import { PrismaAdapter } from '@lucia-auth/adapter-prisma'
+import { Session } from '@prisma/client'
 import { Lucia, generateId } from 'lucia'
 import { cookies } from 'next/headers'
 import { ROLES } from './constants'
@@ -29,7 +31,12 @@ export type User = {
     hasAdminPrecision: boolean;
 }
 
-export async function getUserSession() {
+type GetUserSessionReturnType = {
+    user: { id: string, email: string } | null;
+    session: Session | null;
+}
+
+export async function getUserSession(): Promise<GetUserSessionReturnType| undefined> {
     const sessionId = cookies().get(lucia.sessionCookieName)?.value || null
     if (!sessionId) {
         return undefined
@@ -45,9 +52,19 @@ export async function getUserSession() {
             const sessionCookie = await lucia.createBlankSessionCookie()
             cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
         }
+        if (!user) {
+            return {
+                user: null,
+                session
+            }
+        }
+        const userDetails = await UserModel.getUserInformation(user.id);
 
-        return { 
-            user,
+        return {
+            user: {
+                id: userDetails?.id || '',
+                email: userDetails?.email || ''
+            },
             session
         }
     } catch (error) {
@@ -106,7 +123,7 @@ export async function getUserAuthorization() {
 export async function getUserTeamDetails(): Promise<UserWithTeamMembers | undefined> {
     try {
         const userCookie = await getUserSession();
-        
+
         if (!userCookie?.user) {
             throw new Error('User session not found!')
         }
@@ -137,7 +154,7 @@ export async function getUserTeamDetails(): Promise<UserWithTeamMembers | undefi
         }
 
         return userWithTeam
-        
+
     } catch (error) {
         console.log(error)
         return undefined;
